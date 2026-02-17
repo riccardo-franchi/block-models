@@ -30,6 +30,27 @@ fn create_stochastic_block_model(n: &Vec<usize>, m: &Vec<Vec<usize>>) -> Network
     network
 }
 
+fn sample_edges(n: &Vec<usize>, c: &Vec<Vec<f64>>) -> Vec<Vec<usize>> {
+    let mut m = vec![vec![0; c.len()]; c.len()];
+    let mut rng = rand::rng();
+
+    for r in 0..c.len() {
+        let mean_rr = c[r][r] * n[r] as f64 / 2.0;
+        let poisson_rr = Poisson::new(mean_rr).unwrap();
+
+        m[r][r] = poisson_rr.sample(&mut rng) as usize;
+
+        for s in r + 1..c.len() {
+            let mean_rs = c[r][s] * n[r] as f64;
+            let poisson_rs = Poisson::new(mean_rs).unwrap();
+            m[r][s] = poisson_rs.sample(&mut rng) as usize;
+            m[s][r] = m[r][s];
+        }
+    }
+
+    m
+}
+
 fn calc_largest_component_size(network: &Network) -> usize {
     let mut visited = vec![false; network.len()];
     let mut largest_size = 0;
@@ -67,30 +88,13 @@ fn main() {
     let b = 0.01;
 
     let c = vec![vec![2.0, b], vec![b, 20.0]];
-
-    // Construct n and m
     let n = vec![1_000_000; 2];
-    let mut m = vec![vec![0; c.len()]; c.len()];
-    let mut rng = rand::rng();
 
     let num_realizations = 10;
     let mut total_largest_component_size = 0;
 
     for _ in 0..num_realizations {
-        for r in 0..c.len() {
-            let mean_rr = c[r][r] * n[r] as f64 / 2.0;
-            let poisson_rr = Poisson::new(mean_rr).unwrap();
-
-            m[r][r] = poisson_rr.sample(&mut rng) as usize;
-
-            for s in r + 1..c.len() {
-                let mean_rs = c[r][s] * n[r] as f64;
-                let poisson_rs = Poisson::new(mean_rs).unwrap();
-                m[r][s] = poisson_rs.sample(&mut rng) as usize;
-                m[s][r] = m[r][s];
-            }
-        }
-
+        let m = sample_edges(&n, &c);
         let network = create_stochastic_block_model(&n, &m);
         total_largest_component_size += calc_largest_component_size(&network);
     }
