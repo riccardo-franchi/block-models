@@ -1,5 +1,24 @@
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
+
+mpl.rcParams.update(
+    {
+        "text.usetex": False,
+        "font.family": "sans-serif",
+        "font.size": 11,
+        "axes.labelsize": 12,
+        "axes.titlesize": 12,
+        "legend.fontsize": 10,
+        "xtick.labelsize": 10,
+        "ytick.labelsize": 10,
+        "axes.linewidth": 0.8,
+        "xtick.major.width": 0.8,
+        "ytick.major.width": 0.8,
+        "lines.linewidth": 1.5,
+        "figure.dpi": 150,
+    }
+)
 
 
 def compute_giant_cluster_size(c, phi=1.0, tolerance=1e-8, max_iterations=1_000):
@@ -41,22 +60,68 @@ with open("s_phi.txt") as f:
         measured_s.append(s_val)
         measured_err.append(err)
 
-plt.figure(figsize=(10, 6))
-plt.plot(phi_values, S_values, linewidth=2, color="blue", label="Analytical")
-plt.errorbar(
+fig, ax = plt.subplots(figsize=(5.5, 3.8))
+
+ax.plot(phi_values, S_values, color="#2166ac", label="Analytical", zorder=1)
+ax.errorbar(
     measured_phi,
     measured_s,
     yerr=measured_err,
     fmt="o",
-    markersize=3,
-    color="red",
+    markersize=1,
+    color="#d6604d",
     label="Simulation",
     zorder=2,
-    capsize=3,
+    capsize=2,
+    linewidth=0.8,
+    elinewidth=0.8,
 )
-plt.grid(True, alpha=0.3)
-plt.xlabel(r"$\phi$")
-plt.ylabel(r"$S(\phi)$")
-plt.title("Giant component size vs edge occupation probability")
+
+ax.set_xlabel(r"$\phi$")
+ax.set_ylabel(r"$S(\phi)$")
+# ax.set_title("Giant component size vs. edge occupation probability")
+
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+ax.grid(True, linestyle="--", linewidth=0.4, alpha=0.5, color="gray")
+ax.set_xlim(phi_values[0], phi_values[-1])
+ax.set_ylim(bottom=0)
+
+ax.legend(frameon=True, framealpha=0.9, edgecolor="0.8")
+
+# C matrix annotation box
+n = c.shape[0]
+col_width = max(len(f"{c[i, j]:.4g}") for i in range(n) for j in range(n))
+rows = []
+for i in range(n):
+    entries = "  ".join(f"{c[i, j]:{col_width}.4g}" for j in range(n))
+    bracket_l = "\u23a1" if i == 0 else ("\u23a3" if i == n - 1 else "\u23a2")
+    bracket_r = "\u23a4" if i == 0 else ("\u23a6" if i == n - 1 else "\u23a5")
+    rows.append(f"{bracket_l} {entries} {bracket_r}")
+label = "C ="
+padding = " " * (len(label) + 1)
+lines = [f"{label} {rows[0]}"] + [f"{padding}{row}" for row in rows[1:]]
+matrix_str = "\n".join(lines)
+
+ax.text(
+    0.97,
+    0.05,
+    matrix_str,
+    transform=ax.transAxes,
+    fontsize=9,
+    verticalalignment="bottom",
+    horizontalalignment="right",
+    family="monospace",
+    bbox=dict(
+        boxstyle="round,pad=0.5",
+        facecolor="white",
+        edgecolor="0.6",
+        linewidth=0.8,
+        alpha=0.9,
+    ),
+    color="0.2",
+)
+
 plt.tight_layout()
+plt.savefig("giant_component_size.png", dpi=300, bbox_inches="tight")
 plt.show()

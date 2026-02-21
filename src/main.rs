@@ -148,7 +148,7 @@ fn main() {
     let c = vec![vec![2.0, b], vec![b, 20.0]];
     let n = vec![100_000; 2];
 
-    let num_points = 20;
+    let num_points = 80;
     let num_trials = 10;
 
     // Collect s_phi across trials
