@@ -33,16 +33,27 @@ for phi in phi_values:
 S_values = np.array(S_values)
 
 
-measured_phi, measured_s = [], []
+measured_phi, measured_s, measured_err = [], [], []
 with open("s_phi.txt") as f:
     for line in f:
-        p, s_val = map(float, line.split())
+        p, s_val, err = map(float, line.split())
         measured_phi.append(p)
         measured_s.append(s_val)
+        measured_err.append(err)
 
 plt.figure(figsize=(10, 6))
 plt.plot(phi_values, S_values, linewidth=2, color="blue", label="Analytical")
-plt.scatter(measured_phi, measured_s, s=2, color="red", label="Simulation", zorder=2)
+plt.errorbar(
+    measured_phi,
+    measured_s,
+    yerr=measured_err,
+    fmt="o",
+    markersize=3,
+    color="red",
+    label="Simulation",
+    zorder=2,
+    capsize=3,
+)
 plt.grid(True, alpha=0.3)
 plt.xlabel(r"$\phi$")
 plt.ylabel(r"$S(\phi)$")
