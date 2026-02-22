@@ -1,5 +1,6 @@
 use rand::Rng;
 use rand_distr::{Distribution, Poisson};
+use rayon::prelude::*;
 use statrs::distribution::{Binomial, Discrete};
 use statrs::statistics::Statistics;
 use std::fs::File;
@@ -149,16 +150,18 @@ fn main() {
     let n = vec![100_000; 2];
 
     let num_points = 80;
-    let num_trials = 10;
+    let num_trials = 20;
 
     // Collect s_phi across trials
-    let mut all_s_phi: Vec<Vec<f64>> = Vec::with_capacity(num_trials);
-    for _ in 0..num_trials {
-        let m = sample_edges(&n, &c);
-        let network = create_stochastic_block_model(&n, &m);
-        let s_r = sweep_percolation(&network);
-        all_s_phi.push(calc_s_phi(&s_r, num_points));
-    }
+    let all_s_phi: Vec<Vec<f64>> = (0..num_trials)
+        .into_par_iter()
+        .map(|_| {
+            let m = sample_edges(&n, &c);
+            let network = create_stochastic_block_model(&n, &m);
+            let s_r = sweep_percolation(&network);
+            calc_s_phi(&s_r, num_points)
+        })
+        .collect();
 
     // For each phi index compute mean and std dev of the mean across trials
     let file = File::create("s_phi.txt").expect("could not create s_phi.txt");

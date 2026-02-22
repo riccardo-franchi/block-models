@@ -41,7 +41,7 @@ c = np.array([[2.0, b], [b, 20.0]])
 node_distribution = np.array([0.5, 0.5])
 
 
-phi_values = np.linspace(0, 1, 100)
+phi_values = np.linspace(0, 1, 400)
 S_values = []
 
 for phi in phi_values:
