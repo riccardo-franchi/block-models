@@ -144,10 +144,10 @@ fn calc_s_phi(s_r: &[f64], num_points: usize) -> Vec<f64> {
 }
 
 fn main() {
-    let b = 0.01;
+    let b = 0.001;
 
-    let c = vec![vec![2.0, b], vec![b, 20.0]];
-    let n = vec![100_000; 2];
+    let c = vec![vec![4. / 3., b, b], vec![b, 5.0, b], vec![b, b, 20.0]];
+    let n = vec![100_000; 3];
 
     let num_points = 80;
     let num_trials = 20;
