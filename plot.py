@@ -23,7 +23,7 @@ mpl.rcParams.update(
 
 def compute_giant_cluster_size(c, phi=1.0, tolerance=1e-8, max_iterations=1_000):
 
-    S_guess = np.full(c.shape[0], 0.01)  # Initial guess
+    S_guess = np.full(c.shape[0], 0.5)  # Initial guess
 
     for iteration in range(max_iterations):
         S_new = 1 - np.exp(-phi * c @ S_guess)
@@ -123,5 +123,5 @@ ax.text(
 )
 
 plt.tight_layout()
-plt.savefig("giant_component_size.png", dpi=300, bbox_inches="tight")
+plt.savefig("giant_cluster_size.png", dpi=300, bbox_inches="tight")
 plt.show()

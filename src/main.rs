@@ -1,3 +1,4 @@
+use rand_distr::{Distribution, Poisson};
 use rayon::prelude::*;
 use statrs::statistics::Statistics;
 use std::fs::File;
@@ -6,17 +7,19 @@ use std::io::{BufWriter, Write};
 mod network_generation;
 mod percolation;
 
-use network_generation::{create_stochastic_block_model, sample_poisson_edges};
+use network_generation::create_degree_corrected_sbm;
 use percolation::{calc_s_phi, sweep_edge_percolation};
 
 // Adjacency list representation
 pub type Network = Vec<Vec<usize>>;
 
 fn main() {
-    let b = 0.1;
+    let c = (2.1, 20.1);
 
-    let c = vec![vec![2.0, b], vec![b, 20.0]];
-    let n = vec![100_000; 2];
+    let poisson1 = Poisson::new(c.0).unwrap();
+    let poisson2 = Poisson::new(c.1).unwrap();
+
+    let nodes_per_group = 100_000;
 
     let num_points = 80;
     let num_trials = 10;
@@ -25,8 +28,37 @@ fn main() {
     let all_s_phi: Vec<Vec<f64>> = (0..num_trials)
         .into_par_iter()
         .map(|_| {
-            let m = sample_poisson_edges(&n, &c);
-            let network = create_stochastic_block_model(&n, &m);
+            let mut degree_sequence = (0..2)
+                .map(|_| Vec::with_capacity(nodes_per_group))
+                .collect::<Vec<_>>();
+
+            for _ in 0..nodes_per_group {
+                degree_sequence[0].push(poisson1.sample(&mut rand::rng()) as usize);
+                degree_sequence[1].push(poisson2.sample(&mut rand::rng()) as usize);
+            }
+
+            // sum of degrees of each group
+            let kappa = degree_sequence
+                .iter()
+                .map(|seq| seq.iter().sum::<usize>())
+                .collect::<Vec<usize>>();
+
+            let psi_11 = 2.0 / c.0;
+            let psi_12 = 0.1 / c.0;
+            let psi_22 = 20.0 / c.1;
+
+            let m = vec![
+                vec![
+                    (psi_11 * kappa[0] as f64 / 2.0) as usize,
+                    (psi_12 * kappa[0] as f64) as usize,
+                ],
+                vec![
+                    (psi_12 * kappa[0] as f64) as usize,
+                    (psi_22 * kappa[1] as f64 / 2.0) as usize,
+                ],
+            ];
+
+            let network = create_degree_corrected_sbm(&degree_sequence, &m);
             let s_r = sweep_edge_percolation(&network);
             calc_s_phi(&s_r, num_points)
         })
