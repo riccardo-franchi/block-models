@@ -34,11 +34,11 @@ def compute_giant_cluster_size(c, phi=1.0, tolerance=1e-8, max_iterations=1_000)
     return S_guess, iteration
 
 
-b = 0.001
+b = 0.1
 
-c = np.array([[4.0 / 3.0, b, b], [b, 5.0, b], [b, b, 20.0]])
+c = np.array([[2.0, b], [b, 20.0]])
 
-node_distribution = np.full(3, 1 / 3)
+node_distribution = np.full(2, 1 / 2)
 
 
 phi_values = np.linspace(0, 1, 400)

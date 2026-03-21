@@ -1,5 +1,5 @@
 use crate::Network;
-use rand::Rng;
+use rand::seq::SliceRandom;
 use statrs::distribution::{Binomial, Discrete};
 
 fn union_find_root(i: usize, pointers: &mut [i32]) -> usize {
@@ -16,27 +16,23 @@ fn union_find_root(i: usize, pointers: &mut [i32]) -> usize {
 }
 
 fn get_edges(network: &Network) -> Vec<(usize, usize)> {
-    let mut edges = Vec::new();
-    for (i, neighbors) in network.iter().enumerate() {
-        for &neighbor in neighbors {
-            if i < neighbor {
-                edges.push((i, neighbor));
-            }
-        }
-    }
-
-    edges
+    network
+        .iter()
+        .enumerate()
+        .flat_map(|(i, neighbors)| {
+            neighbors
+                .iter()
+                .filter(move |&&j| i < j)
+                .map(move |&j| (i, j))
+        })
+        .collect()
 }
 
-pub fn sweep_percolation(network: &Network) -> Vec<f64> {
+pub fn sweep_edge_percolation(network: &Network) -> Vec<f64> {
     let mut edges_order = get_edges(network);
 
-    // shuffle edges using Fisher-Yates algorithm
     let mut rng = rand::rng();
-    for i in (1..edges_order.len()).rev() {
-        let j = rng.random_range(0..=i);
-        edges_order.swap(i, j);
-    }
+    edges_order.shuffle(&mut rng);
 
     // perform percolation
     let mut pointers: Vec<i32> = vec![-1; network.len()];
@@ -44,19 +40,21 @@ pub fn sweep_percolation(network: &Network) -> Vec<f64> {
 
     let mut biggest_cluster_size = 1;
 
-    for nodes in edges_order {
-        let root1 = union_find_root(nodes.0, &mut pointers);
-        let root2 = union_find_root(nodes.1, &mut pointers);
+    for (node_a, node_b) in edges_order {
+        let root1 = union_find_root(node_a, &mut pointers);
+        let root2 = union_find_root(node_b, &mut pointers);
         if root1 != root2 {
-            if pointers[root1] > pointers[root2] {
+            let root = if pointers[root1] > pointers[root2] {
                 pointers[root2] += pointers[root1];
                 pointers[root1] = root2 as i32;
+                root2
             } else {
                 pointers[root1] += pointers[root2];
                 pointers[root2] = root1 as i32;
-            }
-            if -pointers[root1] > biggest_cluster_size {
-                biggest_cluster_size = -pointers[root1];
+                root1
+            };
+            if -pointers[root] > biggest_cluster_size {
+                biggest_cluster_size = -pointers[root];
             }
         }
 
@@ -68,24 +66,20 @@ pub fn sweep_percolation(network: &Network) -> Vec<f64> {
 
 pub fn calc_s_phi(s_r: &[f64], num_points: usize) -> Vec<f64> {
     let n = s_r.len();
-    let mut s_phi = Vec::with_capacity(num_points);
 
-    for i in 0..num_points {
-        let phi = i as f64 / (num_points - 1) as f64;
-
-        // Sum from r=0 to n: Binomial(n, phi).pmf(r) * S_r
-        // S_0 (no edges) = 0, S_r for r>0 is s_r[r-1]
-        let sum = if phi == 0.0 {
-            0.0
-        } else if phi == 1.0 {
-            s_r[n - 1]
-        } else {
-            let binom = Binomial::new(phi, n as u64).unwrap();
-            (1..=n).map(|r| binom.pmf(r as u64) * s_r[r - 1]).sum()
-        };
-
-        s_phi.push(sum);
-    }
-
-    s_phi
+    // Sum from r=0 to n: Binomial(n, phi).pmf(r) * S_r
+    // S_0 (no edges) = 0, S_r for r>0 is s_r[r-1]
+    (0..num_points)
+        .map(|i| {
+            let phi = i as f64 / (num_points - 1) as f64;
+            if phi == 0.0 {
+                0.0
+            } else if phi == 1.0 {
+                s_r[n - 1]
+            } else {
+                let binom = Binomial::new(phi, n as u64).unwrap();
+                (1..=n).map(|r| binom.pmf(r as u64) * s_r[r - 1]).sum()
+            }
+        })
+        .collect()
 }

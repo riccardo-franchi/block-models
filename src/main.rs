@@ -6,28 +6,28 @@ use std::io::{BufWriter, Write};
 mod network_generation;
 mod percolation;
 
-use network_generation::{create_stochastic_block_model, sample_edges};
-use percolation::{calc_s_phi, sweep_percolation};
+use network_generation::{create_stochastic_block_model, sample_poisson_edges};
+use percolation::{calc_s_phi, sweep_edge_percolation};
 
 // Adjacency list representation
 pub type Network = Vec<Vec<usize>>;
 
 fn main() {
-    let b = 0.001;
+    let b = 0.1;
 
-    let c = vec![vec![4. / 3., b, b], vec![b, 5.0, b], vec![b, b, 20.0]];
-    let n = vec![100_000; 3];
+    let c = vec![vec![2.0, b], vec![b, 20.0]];
+    let n = vec![100_000; 2];
 
     let num_points = 80;
-    let num_trials = 20;
+    let num_trials = 10;
 
     // Collect s_phi across trials
     let all_s_phi: Vec<Vec<f64>> = (0..num_trials)
         .into_par_iter()
         .map(|_| {
-            let m = sample_edges(&n, &c);
+            let m = sample_poisson_edges(&n, &c);
             let network = create_stochastic_block_model(&n, &m);
-            let s_r = sweep_percolation(&network);
+            let s_r = sweep_edge_percolation(&network);
             calc_s_phi(&s_r, num_points)
         })
         .collect();
