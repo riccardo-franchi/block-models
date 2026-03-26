@@ -43,19 +43,12 @@ fn main() {
                 .map(|seq| seq.iter().sum::<usize>())
                 .collect::<Vec<usize>>();
 
-            let psi_11 = 2.0 / c.0;
             let psi_12 = 0.1 / c.0;
-            let psi_22 = 20.0 / c.1;
+            let m01 = (psi_12 * kappa[0] as f64) as usize;
 
             let m = vec![
-                vec![
-                    (psi_11 * kappa[0] as f64 / 2.0) as usize,
-                    (psi_12 * kappa[0] as f64) as usize,
-                ],
-                vec![
-                    (psi_12 * kappa[0] as f64) as usize,
-                    (psi_22 * kappa[1] as f64 / 2.0) as usize,
-                ],
+                vec![(kappa[0] - m01) / 2, m01],
+                vec![m01, (kappa[1] - m01) / 2],
             ];
 
             let network = create_degree_corrected_sbm(&degree_sequence, &m);

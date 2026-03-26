@@ -88,24 +88,26 @@ pub fn create_degree_corrected_sbm(degree_sequence: &[Vec<usize>], m: &[Vec<usiz
         })
         .collect();
 
+    let mut stub_pointers: Vec<usize> = vec![0; num_groups];
+
     for r in 0..num_groups {
         for i in 0..m[r][r] {
-            let a = stubs[r][2 * i];
-            let b = stubs[r][2 * i + 1];
+            let a = stubs[r][stub_pointers[r] + 2 * i];
+            let b = stubs[r][stub_pointers[r] + 2 * i + 1];
             network[a].push(b);
             network[b].push(a);
         }
-
-        let mut offset = m[r][r] * 2;
+        stub_pointers[r] += m[r][r] * 2;
 
         for s in r + 1..num_groups {
             for i in 0..m[r][s] {
-                let a = stubs[r][offset + i];
-                let b = stubs[s][offset + i];
+                let a = stubs[r][stub_pointers[r] + i];
+                let b = stubs[s][stub_pointers[s] + i];
                 network[a].push(b);
                 network[b].push(a);
             }
-            offset += m[r][s];
+            stub_pointers[r] += m[r][s];
+            stub_pointers[s] += m[r][s];
         }
     }
 
