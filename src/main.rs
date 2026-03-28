@@ -1,4 +1,4 @@
-use rand_distr::{Distribution, Poisson};
+use rand_distr::{Distribution, Geometric};
 use rayon::prelude::*;
 use statrs::statistics::Statistics;
 use std::fs::File;
@@ -14,10 +14,11 @@ use percolation::{calc_s_phi, sweep_edge_percolation};
 pub type Network = Vec<Vec<usize>>;
 
 fn main() {
-    let c = (2.1, 20.1);
+    let a = (0.5, 0.95);
+    let p1 = 0.999;
 
-    let poisson1 = Poisson::new(c.0).unwrap();
-    let poisson2 = Poisson::new(c.1).unwrap();
+    let geometric1 = Geometric::new(1.0 - a.0).unwrap();
+    let geometric2 = Geometric::new(1.0 - a.1).unwrap();
 
     let nodes_per_group = 100_000;
 
@@ -33,8 +34,8 @@ fn main() {
                 .collect::<Vec<_>>();
 
             for _ in 0..nodes_per_group {
-                degree_sequence[0].push(poisson1.sample(&mut rand::rng()) as usize);
-                degree_sequence[1].push(poisson2.sample(&mut rand::rng()) as usize);
+                degree_sequence[0].push(geometric1.sample(&mut rand::rng()) as usize);
+                degree_sequence[1].push(geometric2.sample(&mut rand::rng()) as usize);
             }
 
             // sum of degrees of each group
@@ -43,12 +44,11 @@ fn main() {
                 .map(|seq| seq.iter().sum::<usize>())
                 .collect::<Vec<usize>>();
 
-            let psi_12 = 0.1 / c.0;
-            let m01 = (psi_12 * kappa[0] as f64) as usize;
+            let m12 = ((1.0 - p1) * kappa[0] as f64) as usize;
 
             let m = vec![
-                vec![(kappa[0] - m01) / 2, m01],
-                vec![m01, (kappa[1] - m01) / 2],
+                vec![(kappa[0] - m12) / 2, m12],
+                vec![m12, (kappa[1] - m12) / 2],
             ];
 
             let network = create_degree_corrected_sbm(&degree_sequence, &m);

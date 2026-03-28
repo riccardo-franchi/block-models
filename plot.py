@@ -21,32 +21,45 @@ mpl.rcParams.update(
 )
 
 
-def compute_giant_cluster_size(c, phi=1.0, tolerance=1e-8, max_iterations=1_000):
+def compute_S(K, phi=1.0, tolerance=1e-8, max_iterations=1_000):
 
-    S_guess = np.full(c.shape[0], 0.5)  # Initial guess
+    u = np.full(K, 0.5)  # Initial guess
 
     for iteration in range(max_iterations):
-        S_new = 1 - np.exp(-phi * c @ S_guess)
-        if np.linalg.norm(S_new - S_guess, ord=1) < tolerance:
+        u_new = 1 - phi + phi * psi @ g_1(u)
+        if np.linalg.norm(u_new - u, ord=1) < tolerance:
             break
-        S_guess = S_new
+        u = u_new
 
-    return S_guess, iteration
+    S = 1 - g_0(u)
+
+    return S, iteration
 
 
-b = 0.1
+a = np.array([0.5, 0.95])
 
-c = np.array([[2.0, b], [b, 20.0]])
+avg_degrees = a / (1.0 - a)
 
-node_distribution = np.full(2, 1 / 2)
+p1 = 0.999
+p2 = 1.0 - (1.0 - p1) * (avg_degrees[0] / avg_degrees[1])
+
+psi = np.array([[p1, 1.0 - p1], [1.0 - p2, p2]])
+
+
+def g_0(x):
+    return (1 - a) / (1 - a * x)
+
+
+def g_1(x):
+    return ((1 - a) / (1 - a * x)) ** 2
 
 
 phi_values = np.linspace(0, 1, 400)
 S_values = []
 
 for phi in phi_values:
-    S_vec, _ = compute_giant_cluster_size(c, phi=phi)
-    S = np.dot(node_distribution, S_vec)
+    S_vec, _ = compute_S(a.shape[0], phi=phi)
+    S = np.average(S_vec)
     S_values.append(S)
 
 S_values = np.array(S_values)
@@ -88,39 +101,6 @@ ax.set_xlim(phi_values[0], phi_values[-1])
 ax.set_ylim(bottom=0)
 
 ax.legend(frameon=True, framealpha=0.9, edgecolor="0.8")
-
-# C matrix annotation box
-n = c.shape[0]
-col_width = max(len(f"{c[i, j]:.4g}") for i in range(n) for j in range(n))
-rows = []
-for i in range(n):
-    entries = "  ".join(f"{c[i, j]:{col_width}.4g}" for j in range(n))
-    bracket_l = "\u23a1" if i == 0 else ("\u23a3" if i == n - 1 else "\u23a2")
-    bracket_r = "\u23a4" if i == 0 else ("\u23a6" if i == n - 1 else "\u23a5")
-    rows.append(f"{bracket_l} {entries} {bracket_r}")
-label = "C ="
-padding = " " * (len(label) + 1)
-lines = [f"{label} {rows[0]}"] + [f"{padding}{row}" for row in rows[1:]]
-matrix_str = "\n".join(lines)
-
-ax.text(
-    0.97,
-    0.05,
-    matrix_str,
-    transform=ax.transAxes,
-    fontsize=9,
-    verticalalignment="bottom",
-    horizontalalignment="right",
-    family="monospace",
-    bbox=dict(
-        boxstyle="round,pad=0.5",
-        facecolor="white",
-        edgecolor="0.6",
-        linewidth=0.8,
-        alpha=0.9,
-    ),
-    color="0.2",
-)
 
 plt.tight_layout()
 plt.savefig("giant_cluster_size.png", dpi=300, bbox_inches="tight")
