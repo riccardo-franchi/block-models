@@ -3,7 +3,7 @@ use rand::Rng;
 use rand::seq::SliceRandom;
 use rand_distr::{Distribution, Poisson};
 
-pub fn _create_stochastic_block_model(n: &[usize], m: &[Vec<usize>]) -> Network {
+pub fn create_stochastic_block_model(n: &[usize], m: &[Vec<usize>]) -> Network {
     let num_groups = n.len();
     let num_nodes = n.iter().sum();
     let mut network: Network = vec![Vec::new(); num_nodes];
@@ -37,7 +37,7 @@ pub fn _create_stochastic_block_model(n: &[usize], m: &[Vec<usize>]) -> Network 
     network
 }
 
-pub fn _sample_poisson_edges(n: &[usize], c: &[Vec<f64>]) -> Vec<Vec<usize>> {
+pub fn sample_poisson_edges(n: &[usize], c: &[Vec<f64>]) -> Vec<Vec<usize>> {
     let mut m = vec![vec![0; c.len()]; c.len()];
     let mut rng = rand::rng();
 

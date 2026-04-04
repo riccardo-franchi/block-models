@@ -1,6 +1,8 @@
 use crate::Network;
 use rand::seq::SliceRandom;
+use rayon::prelude::*;
 use statrs::distribution::{Binomial, Discrete};
+use std::collections::VecDeque;
 
 fn union_find_root(i: usize, pointers: &mut [i32]) -> usize {
     let mut r = i;
@@ -80,6 +82,57 @@ pub fn calc_s_phi(s_r: &[f64], num_points: usize) -> Vec<f64> {
                 let binom = Binomial::new(phi, n as u64).unwrap();
                 (1..=n).map(|r| binom.pmf(r as u64) * s_r[r - 1]).sum()
             }
+        })
+        .collect()
+}
+
+fn calc_largest_component_size_masked(network: &Network, active: &[bool]) -> usize {
+    let mut visited = vec![false; network.len()];
+    let mut largest_size = 0;
+
+    for node in 0..network.len() {
+        if !active[node] || visited[node] {
+            continue;
+        }
+
+        let mut queue = VecDeque::from([node]);
+        visited[node] = true;
+        let mut component_size = 0;
+
+        while let Some(current) = queue.pop_front() {
+            component_size += 1;
+
+            for &neighbor in &network[current] {
+                if active[neighbor] && !visited[neighbor] {
+                    visited[neighbor] = true;
+                    queue.push_back(neighbor);
+                }
+            }
+        }
+
+        if component_size > largest_size {
+            largest_size = component_size;
+        }
+    }
+
+    largest_size
+}
+
+pub fn targeted_node_percolation(network: &Network) -> Vec<(f64, f64)> {
+    let degrees: Vec<usize> = network.iter().map(|neighbors| neighbors.len()).collect();
+    let k_max = degrees.iter().max().cloned().unwrap_or(0);
+    let n = network.len();
+
+    (0..=k_max)
+        .into_par_iter()
+        .map(|k| {
+            let active: Vec<bool> = degrees.iter().map(|&d| d <= k).collect();
+            let num_occupied = active.iter().filter(|&&a| a).count();
+            let largest_component_size = calc_largest_component_size_masked(network, &active);
+            (
+                num_occupied as f64 / n as f64,
+                largest_component_size as f64 / n as f64,
+            )
         })
         .collect()
 }
