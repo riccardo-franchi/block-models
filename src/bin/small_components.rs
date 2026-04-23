@@ -38,7 +38,7 @@ fn main() {
         .collect();
 
     let num_trials = 100;
-    let nodes_per_group = 1_000_000;
+    let nodes_per_group = 2_000_000;
 
     let per_trial: Vec<(usize, Vec<usize>)> = (0..num_trials)
         .into_par_iter()
@@ -67,7 +67,9 @@ fn main() {
             ];
 
             let network = create_degree_corrected_sbm(&degree_sequence, &m);
+            drop(degree_sequence);
             let sizes = small_component_sizes(&network);
+            drop(network);
 
             let total_small_nodes: usize = sizes.iter().sum();
             let mut component_counts = vec![0usize; max_size + 1];
