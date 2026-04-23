@@ -21,27 +21,7 @@ mpl.rcParams.update(
 )
 
 
-def compute_S(K, k_max, tolerance=1e-8, max_iterations=1_000):
-
-    u = np.full(K, 0.5)  # Initial guess
-
-    one = np.ones(K)
-
-    f_1_at_1 = f_1(one, k_max)
-
-    for iteration in range(max_iterations):
-        u_new = 1 - psi @ (f_1_at_1 - f_1(u, k_max))
-        if np.linalg.norm(u_new - u, ord=1) < tolerance:
-            break
-        u = u_new
-
-    S = f_0(one, k_max) - f_0(u, k_max)
-
-    return S
-
-
 a = np.array([0.5, 0.95])
-
 avg_degrees = a / (1.0 - a)
 
 p1 = 0.999
@@ -60,13 +40,23 @@ def f_1(z, k_max):
     )
 
 
+def compute_S(K, k_max, tolerance=1e-8, max_iterations=1_000):
+    u = np.full(K, 0.5)
+    one = np.ones(K)
+    f_1_at_1 = f_1(one, k_max)
+    for _ in range(max_iterations):
+        u_new = 1 - psi @ (f_1_at_1 - f_1(u, k_max))
+        if np.linalg.norm(u_new - u, ord=1) < tolerance:
+            break
+        u = u_new
+    return f_0(one, k_max) - f_0(u, k_max)
+
+
 k_values = np.arange(0, 200)
 S_values = []
 occupation_values = []
-
 for k in k_values:
-    S_vec = compute_S(a.shape[0], k_max=k)
-    S_values.append(np.average(S_vec))
+    S_values.append(np.average(compute_S(a.shape[0], k_max=k)))
     occupation_values.append(np.mean(f_0(np.ones(a.shape[0]), k_max=k)))
 
 S_values = np.array(S_values)
@@ -74,7 +64,7 @@ occupation_values = np.array(occupation_values)
 
 
 measured_avg_phi, measured_s = [], []
-with open("s_k.txt") as f:
+with open("output/s_k.txt") as f:
     for line in f:
         _k, phi, s = map(float, line.split())
         measured_avg_phi.append(phi)
@@ -95,7 +85,6 @@ ax.scatter(
 
 ax.set_xlabel(r"$\phi$")
 ax.set_ylabel(r"$S(\phi)$")
-# ax.set_title("Giant component size vs. edge occupation probability")
 
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
@@ -106,5 +95,5 @@ ax.set_ylim(bottom=0)
 ax.legend(frameon=True, framealpha=0.9, edgecolor="0.8")
 
 plt.tight_layout()
-plt.savefig("giant_cluster_size.png", dpi=300, bbox_inches="tight")
+plt.savefig("output/targeted_percolation_dc_sbm.svg", bbox_inches="tight")
 plt.show()

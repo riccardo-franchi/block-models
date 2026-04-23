@@ -1,0 +1,61 @@
+use rand_distr::{Distribution, Geometric};
+use rayon::prelude::*;
+use sbm_simulation::network_generation::create_degree_corrected_sbm;
+use sbm_simulation::percolation::{calc_s_phi, sweep_edge_percolation};
+use statrs::statistics::Statistics;
+use std::fs::File;
+use std::io::{BufWriter, Write};
+
+fn main() {
+    let a = [0.5, 0.95];
+    let p1 = 0.999;
+
+    let geometric1 = Geometric::new(1.0 - a[0]).unwrap();
+    let geometric2 = Geometric::new(1.0 - a[1]).unwrap();
+
+    let nodes_per_group = 100_000;
+
+    let num_points = 80;
+    let num_trials = 10;
+
+    let all_s_phi: Vec<Vec<f64>> = (0..num_trials)
+        .into_par_iter()
+        .map(|_| {
+            let mut degree_sequence = (0..2)
+                .map(|_| Vec::with_capacity(nodes_per_group))
+                .collect::<Vec<_>>();
+
+            for _ in 0..nodes_per_group {
+                degree_sequence[0].push(geometric1.sample(&mut rand::rng()) as usize);
+                degree_sequence[1].push(geometric2.sample(&mut rand::rng()) as usize);
+            }
+
+            let kappa = degree_sequence
+                .iter()
+                .map(|seq| seq.iter().sum::<usize>())
+                .collect::<Vec<usize>>();
+
+            let m12 = ((1.0 - p1) * kappa[0] as f64) as usize;
+
+            let m = vec![
+                vec![(kappa[0] - m12) / 2, m12],
+                vec![m12, (kappa[1] - m12) / 2],
+            ];
+
+            let network = create_degree_corrected_sbm(&degree_sequence, &m);
+            let s_r = sweep_edge_percolation(&network);
+            calc_s_phi(&s_r, num_points)
+        })
+        .collect();
+
+    std::fs::create_dir_all("output").expect("could not create output dir");
+    let file = File::create("output/edge_percolation_dc_sbm.txt").expect("could not create output file");
+    let mut writer = BufWriter::new(file);
+    for i in 0..num_points {
+        let phi = i as f64 / (num_points - 1) as f64;
+        let values: Vec<f64> = all_s_phi.iter().map(|s| s[i]).collect();
+        let mean = values.iter().mean();
+        let std_of_mean = values.iter().std_dev() / (num_trials as f64).sqrt();
+        writeln!(writer, "{phi:.6} {mean:.6} {std_of_mean:.6}").expect("write failed");
+    }
+}

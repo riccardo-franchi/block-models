@@ -5,7 +5,7 @@ edition = "2024"
 readme = "README.md"
 
 [dependencies]
-rand = "0.9"
-rand_distr = "0.5"
-rayon = "1.11"
+rand = "0.10"
+rand_distr = "0.6"
+rayon = "1.12"
 statrs = "0.18"
