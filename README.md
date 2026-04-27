@@ -16,7 +16,7 @@ The first executable, `edge_percolation_sbm` implements the fast edge percolatio
 
 The second executable, `edge_percolation_dc_sbm` implements the same edge percolation algorithm for the degree-corrected stochastic block model, which allows us to find the size of the giant component as a function of the fraction of edges removed, for the more general degree-corrected stochastic block model.
 
-The example is from a geometric degree distribution: $p_k^r = (1-a_r) a_r^k$, with $\bold{a} = (0.5, 0.95)$.
+The example is from a geometric degree distribution: $p_k^r = (1-a_r) a_r^k$, with $\vec{a} = (0.5, 0.95)$.
 
 ![degree-corrected sbm percolation 1](img/geometric_percolation_1.png)
 
@@ -31,8 +31,8 @@ The example is from a degree corrected stochastic block model with the same para
 
 ## Small component size distribution for degree-corrected stochastic block model
 
-The fourth executable, `small_components` compares the numerical solution for the probability that a randomly chosen node belongs to a small component of size $s$ with the results obtained from simulations.
+The fourth executable, `small_components` compares the numerical solutions (two approaches: computation of polynomial generating function and approximation using FFT) for the probability that a randomly chosen node belongs to a small component of size $s$ with the results obtained from simulations.
 
-The example is from a geometric degree distribution: $p_k^r = (1-a_r) a_r^k$, with $\bold{a} = (0.4, 0.8)$.
+The example is from a geometric degree distribution: $p_k^r = (1-a_r) a_r^k$, with $\vec{a} = (0.4, 0.8)$.
 
 ![degree-corrected sbm small components 1](img/small_components_1.svg)
