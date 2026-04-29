@@ -83,10 +83,10 @@ pub fn compute_small_component_size_distribution(
     max_size: usize,
 ) -> Vec<Vec<f64>> {
     assert!(g0.iter().all(|g| g.len() >= max_size));
-    assert!(g1.iter().all(|g| g.len() >= max_size));
+    assert!(g1.iter().all(|g| g.len() >= max_size - 1));
 
     let mut h1: Vec<Vec<f64>> = vec![vec![0.0]; g0.len()];
-    for i in 1..=max_size {
+    for i in 1..max_size {
         let y = psi_times_h(psi, &h1, i);
         h1 = g1
             .iter()
@@ -95,7 +95,7 @@ pub fn compute_small_component_size_distribution(
             .collect();
     }
 
-    let y = psi_times_h(psi, &h1, max_size + 1);
+    let y = psi_times_h(psi, &h1, max_size);
     g0.iter()
         .zip(&y)
         .map(|(g0_r, y_r)| shift_right(&horner_compose(&g0_r[..max_size], y_r, max_size), max_size))
