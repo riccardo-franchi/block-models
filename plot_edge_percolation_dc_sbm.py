@@ -22,10 +22,13 @@ mpl.rcParams.update(
 
 
 a = np.array([0.5, 0.95])
+node_distribution = np.array([0.9, 0.1])
 avg_degrees = a / (1.0 - a)
 
 p1 = 0.999
-p2 = 1.0 - (1.0 - p1) * (avg_degrees[0] / avg_degrees[1])
+p2 = 1.0 - (1.0 - p1) * (
+    (avg_degrees[0] * node_distribution[0]) / (avg_degrees[1] * node_distribution[1])
+)
 
 psi = np.array([[p1, 1.0 - p1], [1.0 - p2, p2]])
 
@@ -49,7 +52,9 @@ def compute_S(K, phi=1.0, tolerance=1e-8, max_iterations=1_000):
 
 
 phi_values = np.linspace(0, 1, 400)
-S_values = np.array([np.average(compute_S(a.shape[0], phi=phi)) for phi in phi_values])
+S_values = np.array(
+    [compute_S(a.shape[0], phi=phi) @ node_distribution for phi in phi_values]
+)
 
 
 measured_phi, measured_s, measured_err = [], [], []

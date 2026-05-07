@@ -7,9 +7,10 @@ use std::io::{BufWriter, Write};
 
 fn main() {
     let b = 0.1;
+    let num_nodes = 500_000.0;
 
-    let c = vec![vec![2.0, b], vec![b, 20.0]];
-    let n = vec![100_000; 2];
+    let c = [vec![2.0, b], vec![b, 20.0]];
+    let n = [(num_nodes * 0.5) as usize, (num_nodes * 0.5) as usize];
 
     let num_points = 80;
     let num_trials = 10;
@@ -25,7 +26,8 @@ fn main() {
         .collect();
 
     std::fs::create_dir_all("output").expect("could not create output dir");
-    let file = File::create("output/edge_percolation_sbm.txt").expect("could not create output file");
+    let file =
+        File::create("output/edge_percolation_sbm.txt").expect("could not create output file");
     let mut writer = BufWriter::new(file);
     for i in 0..num_points {
         let phi = i as f64 / (num_points - 1) as f64;

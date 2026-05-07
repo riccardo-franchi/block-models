@@ -13,7 +13,8 @@ fn main() {
     let geometric1 = Geometric::new(1.0 - a[0]).unwrap();
     let geometric2 = Geometric::new(1.0 - a[1]).unwrap();
 
-    let nodes_per_group = 100_000;
+    let num_nodes = 200_000.0;
+    let n = [(num_nodes * 0.9) as usize, (num_nodes * 0.1) as usize];
 
     let num_points = 80;
     let num_trials = 10;
@@ -21,12 +22,14 @@ fn main() {
     let all_s_phi: Vec<Vec<f64>> = (0..num_trials)
         .into_par_iter()
         .map(|_| {
-            let mut degree_sequence = (0..2)
-                .map(|_| Vec::with_capacity(nodes_per_group))
+            let mut degree_sequence = (0..n.len())
+                .map(|i| Vec::with_capacity(n[i]))
                 .collect::<Vec<_>>();
 
-            for _ in 0..nodes_per_group {
+            for _ in 0..n[0] {
                 degree_sequence[0].push(geometric1.sample(&mut rand::rng()) as usize);
+            }
+            for _ in 0..n[1] {
                 degree_sequence[1].push(geometric2.sample(&mut rand::rng()) as usize);
             }
 
@@ -49,7 +52,8 @@ fn main() {
         .collect();
 
     std::fs::create_dir_all("output").expect("could not create output dir");
-    let file = File::create("output/edge_percolation_dc_sbm.txt").expect("could not create output file");
+    let file =
+        File::create("output/edge_percolation_dc_sbm.txt").expect("could not create output file");
     let mut writer = BufWriter::new(file);
     for i in 0..num_points {
         let phi = i as f64 / (num_points - 1) as f64;

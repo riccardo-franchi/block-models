@@ -33,16 +33,12 @@ def compute_giant_cluster_size(c, phi=1.0, tolerance=1e-8, max_iterations=1_000)
 
 b = 0.1
 c = np.array([[2.0, b], [b, 20.0]])
-node_distribution = np.full(2, 1 / 2)
+node_distribution = np.array([0.5, 0.5])
 
 phi_values = np.linspace(0, 1, 400)
 S_values = np.array(
-    [
-        np.dot(node_distribution, compute_giant_cluster_size(c, phi=phi))
-        for phi in phi_values
-    ]
+    [compute_giant_cluster_size(c, phi) @ node_distribution for phi in phi_values]
 )
-
 
 measured_phi, measured_s, measured_err = [], [], []
 with open("output/edge_percolation_sbm.txt") as f:
@@ -77,6 +73,10 @@ ax.spines["right"].set_visible(False)
 ax.grid(True, linestyle="--", linewidth=0.4, alpha=0.5, color="gray")
 ax.set_xlim(phi_values[0], phi_values[-1])
 ax.set_ylim(bottom=0)
+
+lambda_max = np.linalg.eigvalsh(c).max()
+ax.axvline(1.0 / lambda_max, color="0.4", linestyle=":", linewidth=1.0, zorder=0)
+ax.axhline(node_distribution[0], color="0.65", linestyle=":", linewidth=1.0, zorder=0)
 
 ax.legend(frameon=True, framealpha=0.9, edgecolor="0.8")
 
