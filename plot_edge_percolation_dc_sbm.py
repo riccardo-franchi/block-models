@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
+from scipy import special
 
 mpl.rcParams.update(
     {
@@ -20,10 +21,51 @@ mpl.rcParams.update(
     }
 )
 
+# Group 0: geometric with parameter p = 1 - a  (P(k) = (1-a)*a^k, k=0,1,2,...)
+# Group 1: power law (Zeta) with exponent alpha
+a = 0.5
+alpha = 2.5
+N = 100_000  # truncation for power law series
 
-a = np.array([0.5, 0.95])
 node_distribution = np.array([0.9, 0.1])
-avg_degrees = a / (1.0 - a)
+
+# --- Group 0: geometric generating functions ---
+
+
+def g0_geo(u):
+    return (1 - a) / (1 - a * u)
+
+
+def g1_geo(u):
+    return ((1 - a) / (1 - a * u)) ** 2
+
+
+avg_degree_geo = a / (1.0 - a)
+
+# --- Group 1: power law generating functions ---
+
+
+def precompute_p(alpha, N):
+    k_values = np.arange(1, N + 1)
+    p_values = k_values ** (-alpha) / special.zeta(alpha, 1.0)
+    return k_values, p_values
+
+
+k_pl, p_pl = precompute_p(alpha, N)
+avg_degree_pl = np.sum(k_pl * p_pl)
+
+
+def g0_pl(u):
+    return np.sum(p_pl * u**k_pl)
+
+
+def g1_pl(u):
+    return np.sum(p_pl * k_pl * u ** (k_pl - 1)) / avg_degree_pl
+
+
+# ---  ---
+
+avg_degrees = np.array([avg_degree_geo, avg_degree_pl])
 
 p1 = 0.999
 p2 = 1.0 - (1.0 - p1) * (
@@ -33,28 +75,20 @@ p2 = 1.0 - (1.0 - p1) * (
 psi = np.array([[p1, 1.0 - p1], [1.0 - p2, p2]])
 
 
-def g_0(x):
-    return (1 - a) / (1 - a * x)
-
-
-def g_1(x):
-    return ((1 - a) / (1 - a * x)) ** 2
-
-
-def compute_S(K, phi=1.0, tolerance=1e-8, max_iterations=1_000):
-    u = np.full(K, 0.5)
+def compute_S(phi=1.0, tolerance=1e-8, max_iterations=1_000):
+    u = np.full(2, 0.5)
     for _ in range(max_iterations):
-        u_new = 1 - phi + phi * psi @ g_1(u)
+        g1_vals = np.array([g1_geo(u[0]), g1_pl(u[1])])
+        u_new = 1 - phi + phi * (psi @ g1_vals)
         if np.linalg.norm(u_new - u, ord=1) < tolerance:
             break
         u = u_new
-    return 1 - g_0(u)
+    S = np.array([1 - g0_geo(u[0]), 1 - g0_pl(u[1])])
+    return S
 
 
 phi_values = np.linspace(0, 1, 400)
-S_values = np.array(
-    [compute_S(a.shape[0], phi=phi) @ node_distribution for phi in phi_values]
-)
+S_values = np.array([compute_S(phi) @ node_distribution for phi in phi_values])
 
 
 measured_phi, measured_s, measured_err = [], [], []

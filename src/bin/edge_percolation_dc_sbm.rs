@@ -1,4 +1,4 @@
-use rand_distr::{Distribution, Geometric};
+use rand_distr::{Distribution, Geometric, Zeta};
 use rayon::prelude::*;
 use sbm_simulation::network_generation::create_degree_corrected_sbm;
 use sbm_simulation::percolation::{calc_s_phi, sweep_edge_percolation};
@@ -7,13 +7,15 @@ use std::fs::File;
 use std::io::{BufWriter, Write};
 
 fn main() {
-    let a = [0.5, 0.95];
+    let a = 0.5;
+    let alpha = 2.5;
+
     let p1 = 0.999;
 
-    let geometric1 = Geometric::new(1.0 - a[0]).unwrap();
-    let geometric2 = Geometric::new(1.0 - a[1]).unwrap();
+    let geometric = Geometric::new(1.0 - a).unwrap();
+    let power = Zeta::new(alpha).unwrap();
 
-    let num_nodes = 200_000.0;
+    let num_nodes = 500_000.0;
     let n = [(num_nodes * 0.9) as usize, (num_nodes * 0.1) as usize];
 
     let num_points = 80;
@@ -27,10 +29,10 @@ fn main() {
                 .collect::<Vec<_>>();
 
             for _ in 0..n[0] {
-                degree_sequence[0].push(geometric1.sample(&mut rand::rng()) as usize);
+                degree_sequence[0].push(geometric.sample(&mut rand::rng()) as usize);
             }
             for _ in 0..n[1] {
-                degree_sequence[1].push(geometric2.sample(&mut rand::rng()) as usize);
+                degree_sequence[1].push(power.sample(&mut rand::rng()) as usize);
             }
 
             let kappa = degree_sequence
