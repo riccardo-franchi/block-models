@@ -8,9 +8,9 @@ There are four executables corresponding to four analyses:
 
 The first executable, `edge_percolation_sbm` implements the fast edge percolation algorithm explained in https://arxiv.org/abs/cond-mat/0101295, which allows us to find the size of the giant component as a function of the fraction of edges removed, for the standard and well-known stochastic block model.
 
-![sbm percolation 1](img/sbm_percolation_1.png)
+![sbm percolation 1](img/sbm_percolation_1.svg)
 
-![sbm percolation 2](img/sbm_percolation_2.png)
+![sbm percolation 2](img/sbm_percolation_2.svg)
 
 ## Edge percolation for degree-corrected stochastic block model
 
@@ -19,6 +19,10 @@ The second executable, `edge_percolation_dc_sbm` implements the same edge percol
 The example is from a geometric degree distribution: $p_k^r = (1-a_r) a_r^k$, with $\vec{a} = (0.5, 0.95)$.
 
 ![degree-corrected sbm percolation 1](img/geometric_percolation_1.png)
+
+And here is an example with one small group made of 10% nodes with power law degree distribution with exponent 2.5, and one large group made of nodes with a geometric degree distribution with parameter $a=0.5$:
+
+![degree-corrected sbm percolation 2](img/percolation_dcsbm_mixed.svg)
 
 ## Targeted percolation for degree-corrected stochastic block model
 
