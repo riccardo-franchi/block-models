@@ -1,6 +1,6 @@
 use rand_distr::{Distribution, Geometric};
 use rayon::prelude::*;
-use sbm_simulation::network_generation::create_degree_corrected_sbm;
+use sbm_simulation::network_generation::create_microcanonical_sbm;
 use sbm_simulation::small_components::{
     compute_small_component_size_distribution, small_component_sizes,
 };
@@ -13,8 +13,8 @@ fn main() {
     let p_k = |a: f64, k: i32| (1.0 - a) * a.powi(k);
     let q_k = |a: f64, k: i32| (k + 1) as f64 * p_k(a, k + 1) / avg_degree(a);
 
-    let a = [0.4, 0.8];
-    let p1 = 0.999;
+    let a = [0.2, 0.4];
+    let p1 = 0.8;
     let p2 = 1.0 - (1.0 - p1) * (avg_degree(a[0]) / avg_degree(a[1]));
 
     let max_size = 50;
@@ -66,7 +66,7 @@ fn main() {
                 vec![m12, (kappa[1] - m12) / 2],
             ];
 
-            let network = create_degree_corrected_sbm(&degree_sequence, &m);
+            let network = create_microcanonical_sbm(&degree_sequence, &m);
             drop(degree_sequence);
             let sizes = small_component_sizes(&network);
             drop(network);

@@ -7,6 +7,7 @@ mpl.rcParams.update(
         "text.usetex": False,
         "font.family": "sans-serif",
         "font.size": 11,
+        "mathtext.fontset": "cm",
         "axes.labelsize": 12,
         "axes.titlesize": 12,
         "legend.fontsize": 10,
@@ -46,8 +47,8 @@ def compute_pi_via_fft(g0, g1, psi, max_size, n_points=None, tol=1e-13, max_iter
     return coeffs[:, : max_size + 1]
 
 
-a = np.array([0.4, 0.8])
-p1 = 0.999
+a = np.array([0.2, 0.4])
+p1 = 0.8
 avg_deg = a / (1.0 - a)
 p2 = 1.0 - (1.0 - p1) * (avg_deg[0] / avg_deg[1])
 psi = np.array([[p1, 1.0 - p1], [1.0 - p2, p2]])
@@ -76,18 +77,18 @@ pi_fft_plot = pi_fft[sizes]
 fig, ax = plt.subplots(figsize=(5.5, 3.8))
 
 ax.plot(sizes, analytical, color="#2166ac", label="Analytical (polynomial)", zorder=1)
-ax.plot(
-    sizes,
-    pi_fft_plot,
-    color="#1a9850",
-    linestyle=":",
-    label="Analytical (Cauchy / IFFT)",
-    zorder=2,
-)
+# ax.plot(
+#     sizes,
+#     pi_fft_plot,
+#     color="#1a9850",
+#     linestyle=":",
+#     label="Numerical (Cauchy / FFT)",
+#     zorder=2,
+# )
 ax.scatter(
     sizes,
     simulated,
-    s=6,
+    s=20,
     color="#d6604d",
     label="Simulation",
     zorder=3,
@@ -103,8 +104,8 @@ ax.grid(True, linestyle="--", linewidth=0.4, alpha=0.5, color="gray")
 ax.set_xlim(left=sizes[0])
 ax.set_yscale("log")
 
-ax.legend(frameon=True, framealpha=0.9, edgecolor="0.8")
+# ax.legend(frameon=True, framealpha=0.9, edgecolor="0.8")
 
 plt.tight_layout()
-plt.savefig("output/small_components.svg", bbox_inches="tight")
+plt.savefig("output/small_components.pdf", bbox_inches="tight")
 plt.show()

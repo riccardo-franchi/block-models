@@ -1,6 +1,6 @@
 use rand_distr::{Distribution, Geometric};
 use rayon::prelude::*;
-use sbm_simulation::network_generation::create_degree_corrected_sbm;
+use sbm_simulation::network_generation::create_microcanonical_sbm;
 use sbm_simulation::percolation::targeted_node_percolation;
 use statrs::statistics::Statistics;
 use std::fs::File;
@@ -41,7 +41,7 @@ fn main() {
                 vec![m12, (kappa[1] - m12) / 2],
             ];
 
-            let network = create_degree_corrected_sbm(&degree_sequence, &m);
+            let network = create_microcanonical_sbm(&degree_sequence, &m);
             targeted_node_percolation(&network)
         })
         .collect();

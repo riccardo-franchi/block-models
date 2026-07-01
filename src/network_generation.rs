@@ -58,7 +58,7 @@ pub fn sample_poisson_edges(n: &[usize], c: &[Vec<f64>]) -> Vec<Vec<usize>> {
     m
 }
 
-pub fn create_degree_corrected_sbm(degree_sequence: &[Vec<usize>], m: &[Vec<usize>]) -> Network {
+pub fn create_microcanonical_sbm(degree_sequence: &[Vec<usize>], m: &[Vec<usize>]) -> Network {
     let num_nodes = degree_sequence.iter().map(|seq| seq.len()).sum();
     let num_groups = degree_sequence.len();
     let mut network: Network = vec![Vec::new(); num_nodes];

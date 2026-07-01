@@ -7,6 +7,7 @@ mpl.rcParams.update(
         "text.usetex": False,
         "font.family": "sans-serif",
         "font.size": 11,
+        "mathtext.fontset": "cm",
         "axes.labelsize": 12,
         "axes.titlesize": 12,
         "legend.fontsize": 10,
@@ -77,14 +78,14 @@ ax.scatter(
     measured_avg_phi,
     measured_s,
     marker="o",
-    s=1,
+    s=20,
     color="#d6604d",
     label="Simulation",
     zorder=2,
 )
 
-ax.set_xlabel(r"$\phi$")
-ax.set_ylabel(r"$S(\phi)$")
+ax.set_xlabel(r"$\bar\phi$")
+ax.set_ylabel(r"$S(\bar\phi)$")
 
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
@@ -92,8 +93,8 @@ ax.grid(True, linestyle="--", linewidth=0.4, alpha=0.5, color="gray")
 ax.set_xlim(0, 1)
 ax.set_ylim(bottom=0)
 
-ax.legend(frameon=True, framealpha=0.9, edgecolor="0.8")
+# ax.legend(frameon=True, framealpha=0.9, edgecolor="0.8")
 
 plt.tight_layout()
-plt.savefig("output/targeted_percolation_dc_sbm.svg", bbox_inches="tight")
+plt.savefig("output/geometric_targeted_percolation.pdf", bbox_inches="tight")
 plt.show()
