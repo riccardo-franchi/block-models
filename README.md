@@ -1,6 +1,7 @@
-# Degree-Corrected Stochastic block model
+# Component structure and percolation in block models
 
-This repository contains code for analyzing the giant component, edge-percolation, targeted percolation and small component sized for the degree-corrected stochastic block model, a new model of random graphs that generalizes the stochastic block model by allowing for arbitrary degree distributions within each block. The code is implemented in Rust, and Python scripts are used to plot the results.
+This repository contains code for analyzing the giant component, edge-percolation, targeted percolation and small component sized for the microcanonical stochastic block model, a model of random graphs that generalizes the stochastic block model by allowing for arbitrary degree distributions within each group. 
+The code is implemented in Rust, and Python scripts are used to plot the results.
 
 There are four executables corresponding to four analyses:
 
