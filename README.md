@@ -1,6 +1,6 @@
 # Component structure and percolation in block models
 
-This repository contains code for analyzing the giant component, edge-percolation, targeted percolation and small component sized for the microcanonical stochastic block model, a model of random graphs that generalizes the stochastic block model by allowing for arbitrary degree distributions within each group. 
+This repository contains code for analyzing the giant component, edge-percolation, targeted percolation and small component sized for the microcanonical block model, a model of random graphs that generalizes the stochastic block model by allowing for arbitrary degree distributions within each group. 
 The code is implemented in Rust, and Python scripts are used to plot the results.
 
 There are four executables corresponding to four analyses:
@@ -12,9 +12,9 @@ The first executable, `edge_percolation_sbm` implements the fast edge percolatio
 ![sbm percolation](img/percolation_sbm.svg)
 
 
-## Edge percolation for microcanonical stochastic block model
+## Edge percolation for microcanonical block model
 
-The second executable, `edge_percolation_dc_sbm` implements the same edge percolation algorithm for the microcanonical stochastic block model, where the degree of each node is specified.
+The second executable, `edge_percolation_dc_sbm` implements the same edge percolation algorithm for the microcanonical block model, where the degree of each node is specified.
 
 *Top*: geometric degree distribution: $p_k^r = (1-a_r) a_r^k$, with $\vec{a} = (0.4, 0.8)$.
 *Bottom*: a Network where 10% of the nodes belong too a group with power law degree distribution with exponent 2.5, and rest belong to a group with geometric degree distribution, with parameter $a=0.5$.
@@ -22,16 +22,16 @@ In both cases the mixing parameter is $m_{12}/\kappa_1 = 0.999$.
 
 ![degree-corrected sbm percolation 2](img/percolation_dcsbm.svg)
 
-## Targeted percolation for degree-corrected stochastic block model
+## Nonuniform occupation probability for microcanonical block model
 
-The third executable, `targeted_percolation_dc_sbm` implements a _targeted node percolation_ on the microcanonical stochastic block model, a process where all nodes of degree higher than a certain threshold are removed, and we find the size of the giant cluster as a function of the nodes present.
+The third executable, `targeted_percolation_dc_sbm` implements a _targeted node percolation_ on the microcanonical block model, a process where all nodes of degree higher than a certain threshold are removed, and we find the size of the giant cluster as a function of the nodes present.
 Since there is no ambiguity when performing this process, a simple breadth-first search can be used to find the size of the giant cluster.
 
 Geometric degree distribution: $p_k^r = (1-a_r) a_r^k$, with $\vec{a} = (0.5, 0.95)$ and mixing parameter $m_{12}/\kappa_1 = 0.999$.
 
 ![degree-corrected sbm targeted percolation 1](img/geometric_targeted_percolation.svg)
 
-## Small component size distribution for degree-corrected stochastic block model
+## Small component size distribution for microcanonical block model
 
 The fourth executable, `small_components` compares the numerical solutions for the probability that a randomly chosen node belongs to a small component of size $s$ with the results obtained from simulations.
 

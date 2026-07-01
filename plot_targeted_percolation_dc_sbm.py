@@ -2,24 +2,22 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 
-mpl.rcParams.update(
-    {
-        "text.usetex": False,
-        "font.family": "sans-serif",
-        "font.size": 11,
-        "mathtext.fontset": "cm",
-        "axes.labelsize": 12,
-        "axes.titlesize": 12,
-        "legend.fontsize": 10,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
-        "axes.linewidth": 0.8,
-        "xtick.major.width": 0.8,
-        "ytick.major.width": 0.8,
-        "lines.linewidth": 1.5,
-        "figure.dpi": 150,
-    }
-)
+mpl.rcParams.update({
+    "text.usetex": False,
+    "font.family": "sans-serif",
+    "font.size": 11,
+    "mathtext.fontset": "cm",
+    "axes.labelsize": 12,
+    "axes.titlesize": 12,
+    "legend.fontsize": 10,
+    "xtick.labelsize": 10,
+    "ytick.labelsize": 10,
+    "axes.linewidth": 0.8,
+    "xtick.major.width": 0.8,
+    "ytick.major.width": 0.8,
+    "lines.linewidth": 1.5,
+    "figure.dpi": 150,
+})
 
 
 a = np.array([0.5, 0.95])

@@ -2,24 +2,22 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 
-mpl.rcParams.update(
-    {
-        "text.usetex": False,
-        "font.family": "sans-serif",
-        "font.size": 11,
-        "mathtext.fontset": "cm",
-        "axes.labelsize": 12,
-        "axes.titlesize": 12,
-        "legend.fontsize": 10,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
-        "axes.linewidth": 0.8,
-        "xtick.major.width": 0.8,
-        "ytick.major.width": 0.8,
-        "lines.linewidth": 1.5,
-        "figure.dpi": 150,
-    }
-)
+mpl.rcParams.update({
+    "text.usetex": False,
+    "font.family": "sans-serif",
+    "font.size": 11,
+    "mathtext.fontset": "cm",
+    "axes.labelsize": 12,
+    "axes.titlesize": 12,
+    "legend.fontsize": 10,
+    "xtick.labelsize": 10,
+    "ytick.labelsize": 10,
+    "axes.linewidth": 0.8,
+    "xtick.major.width": 0.8,
+    "ytick.major.width": 0.8,
+    "lines.linewidth": 1.5,
+    "figure.dpi": 150,
+})
 
 
 def compute_giant_cluster_size(c, phi=1.0, tolerance=1e-8, max_iterations=1_000):
@@ -63,9 +61,9 @@ def plot_panel(ax, b, show_xlabel=True):
     node_distribution = np.array([0.5, 0.5])
 
     phi_values = np.linspace(0, 1, 400)
-    S_values = np.array(
-        [compute_giant_cluster_size(c, phi) @ node_distribution for phi in phi_values]
-    )
+    S_values = np.array([
+        compute_giant_cluster_size(c, phi) @ node_distribution for phi in phi_values
+    ])
 
     measured_phi, measured_s, _ = read_measurements(
         f"output/edge_percolation_sbm_b{b}.txt"
@@ -94,7 +92,9 @@ def plot_panel(ax, b, show_xlabel=True):
 
     lambda_max = np.linalg.eigvalsh(c).max()
     ax.axvline(1.0 / lambda_max, color="0.4", linestyle=":", linewidth=1.0, zorder=0)
-    ax.axhline(node_distribution[0], color="0.65", linestyle=":", linewidth=1.0, zorder=0)
+    ax.axhline(
+        node_distribution[0], color="0.65", linestyle=":", linewidth=1.0, zorder=0
+    )
 
     ax.text(
         0.97,
@@ -128,4 +128,3 @@ plt.tight_layout()
 fig.subplots_adjust(hspace=0.08)
 plt.savefig("output/edge_percolation_sbm.pdf", bbox_inches="tight")
 plt.show()
-

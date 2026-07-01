@@ -3,24 +3,22 @@ import matplotlib as mpl
 import numpy as np
 from scipy import special
 
-mpl.rcParams.update(
-    {
-        "text.usetex": False,
-        "font.family": "sans-serif",
-        "font.size": 11,
-        "mathtext.fontset": "cm",
-        "axes.labelsize": 12,
-        "axes.titlesize": 12,
-        "legend.fontsize": 10,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
-        "axes.linewidth": 0.8,
-        "xtick.major.width": 0.8,
-        "ytick.major.width": 0.8,
-        "lines.linewidth": 1.5,
-        "figure.dpi": 150,
-    }
-)
+mpl.rcParams.update({
+    "text.usetex": False,
+    "font.family": "sans-serif",
+    "font.size": 11,
+    "mathtext.fontset": "cm",
+    "axes.labelsize": 12,
+    "axes.titlesize": 12,
+    "legend.fontsize": 10,
+    "xtick.labelsize": 10,
+    "ytick.labelsize": 10,
+    "axes.linewidth": 0.8,
+    "xtick.major.width": 0.8,
+    "ytick.major.width": 0.8,
+    "lines.linewidth": 1.5,
+    "figure.dpi": 150,
+})
 
 phi_values = np.linspace(0, 1, 400)
 
@@ -62,7 +60,6 @@ def draw_panel(ax, S_values, measured_path, show_xlabel=True):
     style_axes(ax, show_xlabel=show_xlabel)
 
 
-
 # Panel 1: two geometric groups, parameters a = (0.4, 0.8)
 
 a_geo = np.array([0.4, 0.8])
@@ -99,10 +96,9 @@ def compute_S_geometric(phi=1.0, tolerance=1e-8, max_iterations=1_000):
     return S
 
 
-S_values_geo = np.array(
-    [compute_S_geometric(phi) @ node_distribution_geo for phi in phi_values]
-)
-
+S_values_geo = np.array([
+    compute_S_geometric(phi) @ node_distribution_geo for phi in phi_values
+])
 
 
 # Panel 2: group 0 geometric (a = 0.5), group 1 power law (alpha = 2.5)
@@ -189,7 +185,6 @@ def compute_S(phi, tolerance=1e-8, max_iterations=1_000):
 
 
 S_values_mixed = node_distribution @ compute_S(phi_values)
-
 
 
 fig, axes = plt.subplots(2, 1, figsize=(5.5, 4.0), sharex=True)
