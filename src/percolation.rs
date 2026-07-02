@@ -86,6 +86,11 @@ pub fn calc_s_phi(s_r: &[f64], num_points: usize) -> Vec<f64> {
         .collect()
 }
 
+pub fn calc_largest_component_size(network: &Network) -> usize {
+    let active: Vec<bool> = vec![true; network.len()];
+    calc_largest_component_size_masked(network, &active)
+}
+
 fn calc_largest_component_size_masked(network: &Network, active: &[bool]) -> usize {
     let mut visited = vec![false; network.len()];
     let mut largest_size = 0;
