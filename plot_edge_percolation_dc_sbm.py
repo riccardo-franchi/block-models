@@ -1,18 +1,25 @@
+import dataclasses
+
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.font_manager as fm
 import numpy as np
 from scipy import special
 
+for i, f in enumerate(fm.fontManager.ttflist):
+    if f.name == "CMU Serif" and f.style == "normal" and f.weight == 500:
+        fm.fontManager.ttflist[i] = dataclasses.replace(f, weight="normal")
+
 mpl.rcParams.update({
     "text.usetex": False,
-    "font.family": "sans-serif",
-    "font.size": 11,
+    "font.family": "CMU Serif",
+    "font.size": 13,
     "mathtext.fontset": "cm",
-    "axes.labelsize": 12,
-    "axes.titlesize": 12,
-    "legend.fontsize": 10,
-    "xtick.labelsize": 10,
-    "ytick.labelsize": 10,
+    "axes.labelsize": 13,
+    "axes.titlesize": 13,
+    "legend.fontsize": 13,
+    "xtick.labelsize": 13,
+    "ytick.labelsize": 13,
     "axes.linewidth": 0.8,
     "xtick.major.width": 0.8,
     "ytick.major.width": 0.8,
@@ -40,12 +47,12 @@ def style_axes(ax, show_xlabel=True):
     ax.set_ylabel(r"$S(\phi)$")
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.grid(True, linestyle="--", linewidth=0.4, alpha=0.5, color="gray")
+    ax.grid(False)
     ax.set_xlim(phi_values[0], phi_values[-1])
     ax.set_ylim(bottom=0)
 
 
-def draw_panel(ax, S_values, measured_path, show_xlabel=True):
+def draw_panel(ax, S_values, measured_path, label, show_xlabel=True):
     measured_phi, measured_s, _ = read_measurements(measured_path)
     ax.plot(phi_values, S_values, color="#2166ac", label="Analytical", zorder=1)
     ax.scatter(
@@ -58,6 +65,7 @@ def draw_panel(ax, S_values, measured_path, show_xlabel=True):
         linewidths=0,
     )
     style_axes(ax, show_xlabel=show_xlabel)
+    ax.text(0.02, 0.95, label, transform=ax.transAxes, ha="left", va="top")
 
 
 # Panel 1: two geometric groups, parameters a = (0.4, 0.8)
@@ -193,14 +201,20 @@ draw_panel(
     axes[0],
     S_values_geo,
     "output/edge_percolation_dc_sbm_geometric.txt",
+    "(a)",
     show_xlabel=False,
 )
 draw_panel(
     axes[1],
     S_values_mixed,
     "output/edge_percolation_dc_sbm_mixed.txt",
+    "(b)",
     show_xlabel=True,
 )
+
+ymax = max(ax.get_ylim()[1] for ax in axes)
+for ax in axes:
+    ax.set_ylim(0, ymax)
 
 # axes[0].legend(frameon=True, framealpha=0.9, edgecolor="0.8", loc="upper left")
 

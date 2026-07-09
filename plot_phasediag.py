@@ -1,17 +1,24 @@
+import dataclasses
+
 from numpy import loadtxt, arange
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.font_manager as fm
+
+for i, f in enumerate(fm.fontManager.ttflist):
+    if f.name == "CMU Serif" and f.style == "normal" and f.weight == 500:
+        fm.fontManager.ttflist[i] = dataclasses.replace(f, weight="normal")
 
 mpl.rcParams.update({
     "text.usetex": False,
-    "font.family": "sans-serif",
-    "font.size": 11,
+    "font.family": "CMU Serif",
+    "font.size": 12,
     "mathtext.fontset": "cm",
     "axes.labelsize": 12,
     "axes.titlesize": 12,
-    "legend.fontsize": 10,
-    "xtick.labelsize": 10,
-    "ytick.labelsize": 10,
+    "legend.fontsize": 12,
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
     "axes.linewidth": 0.8,
     "xtick.major.width": 0.8,
     "ytick.major.width": 0.8,
@@ -61,11 +68,10 @@ plt.ylabel(r"Group 2 mean degree $c_2$", labelpad=10)
 plt.xticks([0, 0.25, 0.5, 0.75, 1.0])
 plt.yticks([0, 0.25, 0.5, 0.75, 1.0])
 plt.tick_params(direction="in", top=True, right=True)
-plt.text(0.65, 0.7, "Giant component exists", ha="center", va="center", fontsize=11)
-plt.text(0.4, 0.4, "No giant\ncomponent", ha="center", va="center", fontsize=11)
-plt.text(0.12, 0.45, "Impossible", ha="center", va="center", rotation=90, fontsize=11)
-plt.text(0.45, 0.12, "Impossible", ha="center", va="center", fontsize=11)
+plt.text(0.75, 0.75, "Giant component\nexists", ha="center", va="center", color="white")
+plt.text(0.4, 0.4, "No giant\ncomponent", ha="center", va="center")
+plt.text(0.12, 0.45, "Impossible", ha="center", va="center", rotation=90)
+plt.text(0.45, 0.12, "Impossible", ha="center", va="center")
 
-plt.savefig("output/phasediag2.pdf", bbox_inches="tight")
-
+plt.savefig("output/phasediag3.pdf", bbox_inches="tight")
 plt.show()

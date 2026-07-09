@@ -1,17 +1,24 @@
+import dataclasses
+
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.font_manager as fm
 import numpy as np
+
+for i, f in enumerate(fm.fontManager.ttflist):
+    if f.name == "CMU Serif" and f.style == "normal" and f.weight == 500:
+        fm.fontManager.ttflist[i] = dataclasses.replace(f, weight="normal")
 
 mpl.rcParams.update({
     "text.usetex": False,
-    "font.family": "sans-serif",
-    "font.size": 11,
+    "font.family": "CMU Serif",
+    "font.size": 13,
     "mathtext.fontset": "cm",
-    "axes.labelsize": 12,
-    "axes.titlesize": 12,
-    "legend.fontsize": 10,
-    "xtick.labelsize": 10,
-    "ytick.labelsize": 10,
+    "axes.labelsize": 13,
+    "axes.titlesize": 13,
+    "legend.fontsize": 13,
+    "xtick.labelsize": 13,
+    "ytick.labelsize": 13,
     "axes.linewidth": 0.8,
     "xtick.major.width": 0.8,
     "ytick.major.width": 0.8,
@@ -87,7 +94,7 @@ ax.set_ylabel(r"$S(\bar\phi)$")
 
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
-ax.grid(True, linestyle="--", linewidth=0.4, alpha=0.5, color="gray")
+ax.grid(False)
 ax.set_xlim(0, 1)
 ax.set_ylim(bottom=0)
 

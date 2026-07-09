@@ -1,17 +1,27 @@
+import dataclasses
+
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.font_manager as fm
 import numpy as np
+
+# The bundled CMU Serif Roman face is tagged with weight 500 instead of
+# "normal", which makes matplotlib's font matcher miss it and silently
+# fall back to a different font. Patch the metadata so it resolves.
+for i, f in enumerate(fm.fontManager.ttflist):
+    if f.name == "CMU Serif" and f.style == "normal" and f.weight == 500:
+        fm.fontManager.ttflist[i] = dataclasses.replace(f, weight="normal")
 
 mpl.rcParams.update({
     "text.usetex": False,
-    "font.family": "sans-serif",
-    "font.size": 11,
+    "font.family": "CMU Serif",
+    "font.size": 13,
     "mathtext.fontset": "cm",
-    "axes.labelsize": 12,
-    "axes.titlesize": 12,
-    "legend.fontsize": 10,
-    "xtick.labelsize": 10,
-    "ytick.labelsize": 10,
+    "axes.labelsize": 13,
+    "axes.titlesize": 13,
+    "legend.fontsize": 13,
+    "xtick.labelsize": 13,
+    "ytick.labelsize": 13,
     "axes.linewidth": 0.8,
     "xtick.major.width": 0.8,
     "ytick.major.width": 0.8,
@@ -30,21 +40,6 @@ def compute_giant_cluster_size(c, phi=1.0, tolerance=1e-8, max_iterations=1_000)
     return S_guess
 
 
-def matrix_label(c):
-    n = c.shape[0]
-    col_width = max(len(f"{c[i, j]:.4g}") for i in range(n) for j in range(n))
-    rows = []
-    for i in range(n):
-        entries = "  ".join(f"{c[i, j]:{col_width}.4g}" for j in range(n))
-        bracket_l = "⎡" if i == 0 else ("⎣" if i == n - 1 else "⎢")
-        bracket_r = "⎤" if i == 0 else ("⎦" if i == n - 1 else "⎥")
-        rows.append(f"{bracket_l} {entries} {bracket_r}")
-    label = "C ="
-    padding = " " * (len(label) + 1)
-    lines = [f"{label} {rows[0]}"] + [f"{padding}{row}" for row in rows[1:]]
-    return "\n".join(lines)
-
-
 def read_measurements(path):
     phi, s, err = [], [], []
     with open(path) as f:
@@ -56,7 +51,7 @@ def read_measurements(path):
     return phi, s, err
 
 
-def plot_panel(ax, b, show_xlabel=True):
+def plot_panel(ax, b, label, show_xlabel=True):
     c = np.array([[2.0, b], [b, 20.0]])
     node_distribution = np.array([0.5, 0.5])
 
@@ -86,7 +81,7 @@ def plot_panel(ax, b, show_xlabel=True):
 
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.grid(True, linestyle="--", linewidth=0.4, alpha=0.5, color="gray")
+    ax.grid(False)
     ax.set_xlim(phi_values[0], phi_values[-1])
     ax.set_ylim(bottom=0)
 
@@ -96,31 +91,19 @@ def plot_panel(ax, b, show_xlabel=True):
         node_distribution[0], color="0.65", linestyle=":", linewidth=1.0, zorder=0
     )
 
-    ax.text(
-        0.97,
-        0.05,
-        matrix_label(c),
-        transform=ax.transAxes,
-        fontsize=9,
-        verticalalignment="bottom",
-        horizontalalignment="right",
-        family="monospace",
-        bbox=dict(
-            boxstyle="round,pad=0.5",
-            facecolor="white",
-            edgecolor="0.6",
-            linewidth=0.8,
-            alpha=0.9,
-        ),
-        color="0.2",
-    )
+    ax.text(0.08, 0.95, label, transform=ax.transAxes, ha="left", va="top")
 
 
 b_values = [0.1, 0.001]
+panel_labels = ["(a)", "(b)"]
 
 fig, axes = plt.subplots(2, 1, figsize=(5.5, 4.0), sharex=True)
-for i, (ax, b) in enumerate(zip(axes, b_values)):
-    plot_panel(ax, b, show_xlabel=(i == len(b_values) - 1))
+for i, (ax, b, label) in enumerate(zip(axes, b_values, panel_labels)):
+    plot_panel(ax, b, label, show_xlabel=(i == len(b_values) - 1))
+
+ymax = max(ax.get_ylim()[1] for ax in axes)
+for ax in axes:
+    ax.set_ylim(0, ymax)
 
 # axes[0].legend(frameon=True, framealpha=0.9, edgecolor="0.8", loc="upper left")
 

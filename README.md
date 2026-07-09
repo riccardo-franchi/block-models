@@ -25,7 +25,7 @@ The third executable, `edge_percolation_dc_sbm` implements the same edge percola
 
 *Top*: geometric degree distribution: $p_k^r = (1-a_r) a_r^k$, with $\vec{a} = (0.4, 0.8)$.
 *Bottom*: a Network where 10% of the nodes belong too a group with power law degree distribution with exponent 2.5, and rest belong to a group with geometric degree distribution, with parameter $a=0.5$.
-In both cases the mixing parameter is $m_{12}/\kappa_1 = 0.999$.
+In both cases the mixing parameter is $m_{12}/\kappa_1 = 0.001$.
 
 ![degree-corrected sbm percolation 2](img/percolation_dcsbm.svg)
 
@@ -34,7 +34,7 @@ In both cases the mixing parameter is $m_{12}/\kappa_1 = 0.999$.
 The fourth executable, `targeted_percolation_dc_sbm` implements a _targeted node percolation_ on the microcanonical block model, a process where all nodes of degree higher than a certain threshold are removed, and we find the size of the giant cluster as a function of the nodes present.
 Since there is no ambiguity when performing this process, a simple breadth-first search can be used to find the size of the giant cluster.
 
-Geometric degree distribution: $p_k^r = (1-a_r) a_r^k$, with $\vec{a} = (0.5, 0.95)$ and mixing parameter $m_{12}/\kappa_1 = 0.999$.
+Geometric degree distribution: $p_k^r = (1-a_r) a_r^k$, with $\vec{a} = (0.5, 0.95)$ and mixing parameter $m_{12}/\kappa_1 = 0.001$.
 
 ![degree-corrected sbm targeted percolation 1](img/geometric_targeted_percolation.svg)
 
