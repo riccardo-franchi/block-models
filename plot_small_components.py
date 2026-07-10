@@ -100,8 +100,8 @@ ax.scatter(
     linewidths=0,
 )
 
-ax.set_xlabel(r"$s$")
-ax.set_ylabel(r"$\pi_s$")
+ax.set_xlabel(r"$t$")
+ax.set_ylabel(r"$\pi_t$")
 
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
