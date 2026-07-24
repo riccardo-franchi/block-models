@@ -1,6 +1,6 @@
 # Component structure and percolation in block models
 
-This repository contains code for analyzing the giant component, edge-percolation, targeted percolation and small component sized for the microcanonical block model, a model of random graphs that generalizes the stochastic block model by allowing for arbitrary degree distributions within each group. 
+This repository contains the source code relative to the paper [Component structure and percolation in block models](https://arxiv.org/abs/2607.20719). 
 The code is implemented in Rust, and Python scripts are used to plot the results.
 
 There are five executables corresponding to four analyses:
@@ -14,7 +14,7 @@ The network consists of $n=100 000$ nodes, subdivided into two groups of equal s
 
 ## Edge percolation for stochastic block model
 
-The second executable, `edge_percolation_sbm` implements the fast edge percolation algorithm explained in https://arxiv.org/abs/cond-mat/0101295, which allows us to find the size of the giant component as a function of the fraction of edges removed, for the standard and well-known stochastic block model.
+The second executable, `edge_percolation_sbm` implements the fast edge percolation algorithm presented in https://arxiv.org/abs/cond-mat/0101295, which allows us to find the size of the giant component as a function of the fraction of edges removed, for the standard and well-known stochastic block model.
 
 ![sbm percolation](img/percolation_sbm.svg)
 
