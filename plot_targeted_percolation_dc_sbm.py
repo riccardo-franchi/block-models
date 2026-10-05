@@ -89,8 +89,8 @@ ax.scatter(
     zorder=2,
 )
 
-ax.set_xlabel(r"$\bar\phi$")
-ax.set_ylabel(r"$S(\bar\phi)$")
+ax.set_xlabel(r"Fraction of occupied nodes $\bar\phi$")
+ax.set_ylabel(r"Size of giant cluster $S(\bar\phi)$")
 
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)

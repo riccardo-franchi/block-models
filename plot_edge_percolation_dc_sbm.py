@@ -43,8 +43,7 @@ def read_measurements(path):
 
 def style_axes(ax, show_xlabel=True):
     if show_xlabel:
-        ax.set_xlabel(r"$\phi$")
-    ax.set_ylabel(r"$S(\phi)$")
+        ax.set_xlabel(r"Occupation probability $\phi$")
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.grid(False)
@@ -218,6 +217,7 @@ for ax in axes:
 
 # axes[0].legend(frameon=True, framealpha=0.9, edgecolor="0.8", loc="upper left")
 
+fig.supylabel(r"Size of giant cluster $S(\phi)$", fontsize=mpl.rcParams["axes.labelsize"])
 plt.tight_layout()
 fig.subplots_adjust(hspace=0.08)
 plt.savefig("output/edge_percolation_dc_sbm.pdf", bbox_inches="tight")

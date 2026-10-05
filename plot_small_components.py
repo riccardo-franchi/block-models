@@ -100,8 +100,8 @@ ax.scatter(
     linewidths=0,
 )
 
-ax.set_xlabel(r"$t$")
-ax.set_ylabel(r"$\pi_t$")
+ax.set_xlabel(r"Component size $t$")
+ax.set_ylabel(r"Probability of belonging to component $\pi_t$")
 
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
